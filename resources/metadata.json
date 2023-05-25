@@ -1,0 +1,8 @@
+{
+  "name": "Quick Settings Audio Devices Renamer",
+  "description": "Rename any input/output device in your Gnome Quick Settings Audio Panel to your liking. By default, audio devices names are quite long and possibly difficult to quickly distinguish on the list among other outputs/inputs. This extension makes it easy to customize devices names so that, e.g. \"Speaker - Family 17h/19h HD Audio Controller\" could become just \"Laptop Speakers\".",
+  "uuid": "quicksettings-audio-devices-renamer@marcinjahn.com",
+  "shell-version": ["43", "44"],
+  "url": "https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension",
+  "version": 1
+}
