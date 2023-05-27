@@ -6,6 +6,8 @@ import {
   EntryRow
 } from '@gi-ts/adw1';
 
+//TODO: Disallow to have duplicate names!
+
 function init() {}
 
 function fillPreferencesWindow(window: PreferencesWindow) {

@@ -1,31 +1,33 @@
-import { DeviceType, DisplayName } from "identification";
-import { delay, disposeDelayTimeouts } from "utils/delay";
+import { disposeDelayTimeouts } from "./utils/delay";
 
-import { AudioPanel, UpdateType } from "./audio-panel";
+import { 
+  AudioPanel,
+  SubscriptionId,
+  UpdateType,
+  generateDiffUpdate,
+  generateUpdateFromSingleState } from "./audio-panel";
 import {
   AudioPanelMixerSource,
-  MixerEvent,
-  MixerSubscription,
   MixerWrapper,
 } from "./mixer";
 import {
   InputNamesMap,
+  NamesMap,
   OutputNamesMap,
   SettingsUtils,
 } from "./settings";
 
-const ExtensionUtils = imports.misc.extensionUtils;
-
 class Extension {
-  private _uuid: string | null;
-  private _mixer: MixerWrapper | null;
-  private _mixerSubscription: MixerSubscription | null;
-  private _audioPanel: AudioPanel | null;
-  private _settings: SettingsUtils | null;
-  private _outputSettingsSubscription: number | null;
-  private _inputSettingsSubscription: number | null;
-  private _lastOutputsMap: Record<string, string> | null;
-  private _lastInputsMap: Record<string, string> | null;
+  private _uuid: string | null = null;
+  private _mixer: MixerWrapper | null = null;
+  private _audioPanel: AudioPanel | null = null;
+  private _settings: SettingsUtils | null = null;
+  private _outputSettingsSubscription: number | null = null;
+  private _inputSettingsSubscription: number | null = null;
+  private _lastOutputsMap: NamesMap | null = null;
+  private _lastInputsMap: NamesMap | null = null;
+  private _audioPanelOutputsSub: SubscriptionId | null = null;
+  private _audioPanelInputsSub: SubscriptionId | null = null;
 
   constructor(uuid: string) {
     this._uuid = uuid;
@@ -40,106 +42,154 @@ class Extension {
     new AudioPanelMixerSource().getMixer().then((mixer) => {
       this._mixer = mixer;
 
-      this.setSettingsMaps();
-      this.setupDeviceChangesSubscription();
+      // TEMPORARY, for fresh start
+      // this._settings?.setInputNamesMap({});
+      // this._settings?.setOutputNamesMap({});
+
       this.setupSettingMapsChangesHandling();
+      this.initialSettingsSetup();
+      this.setupAudioPanelChangesSubscription();
+
+      this.forceOutputAudioPanelUpdate();
+      this.forceInputAudioPanelUpdate();
     });
   }
 
   setupSettingMapsChangesHandling() {
-    this._outputSettingsSubscription = this._settings!.connectToChanges(
+    if (!this._settings) {
+      return;
+    }
+
+    this._outputSettingsSubscription = this._settings.connectToChanges(
       OutputNamesMap,
-      this.outputsMapUpdated.bind(this)
+      this.outputsSettingsMapUpdated.bind(this)
     );
 
-    this._inputSettingsSubscription = this._settings!.connectToChanges(
+    this._inputSettingsSubscription = this._settings.connectToChanges(
       InputNamesMap,
-      this.inputsMapUpdated.bind(this)
+      this.inputsSettingsMapUpdated.bind(this)
     );
   }
 
-  outputsMapUpdated() {
-    if (!this._settings) {
+  outputsSettingsMapUpdated() {
+    if (!this._settings || !this._lastOutputsMap || !this._audioPanel) {
       return;
     }
 
-    const newSettings = this._settings!.getOutputNamesMap();
+    const newMap = this._settings.getOutputNamesMap();
 
-    const updates: UpdateType[] = [];
-    Object.keys(newSettings).forEach(originalName => {
-      if (this._lastOutputsMap?.[originalName] === newSettings[originalName]) {
-        return;
-      }
+    const updates = generateDiffUpdate(this._lastOutputsMap, newMap);
 
-      if (this._lastOutputsMap?.[originalName]) {
-        updates.push({
-          oldName: this._lastOutputsMap![originalName],
-          newName: newSettings[originalName]
-        });
-      }
+    this._lastOutputsMap = newMap;
+
+    log('updates')
+    updates.forEach(update => {
+      log(`${update.oldName} : ${update.newName}`);
     });
 
-    this._audioPanel?.updateDevicesNames(updates, 'output');
+    this._audioPanel.applyUpdate(updates, 'output');
   }
 
-  inputsMapUpdated() {
-    if (!this._settings) {
+  forceOutputAudioPanelUpdate() {
+    if (!this._settings || !this._lastOutputsMap || !this._audioPanel) {
       return;
     }
 
-    const newSettings = this._settings!.getInputNamesMap();
+    const map = this._settings.getOutputNamesMap();
+    const updates = generateUpdateFromSingleState(map);
 
-    const updates: UpdateType[] = [];
-    Object.keys(newSettings).forEach(originalName => {
-      if (this._lastInputsMap?.[originalName] === newSettings[originalName]) {
-        return;
-      }
-
-      if (this._lastInputsMap?.[originalName]) {
-        updates.push({
-          oldName: this._lastInputsMap![originalName],
-          newName: newSettings[originalName]
-        });
-      }
-    });
-
-    this._audioPanel?.updateDevicesNames(updates, 'input');
+    this._audioPanel.applyUpdate(updates, 'output');
   }
 
-  setupDeviceChangesSubscription() {
-    this._mixerSubscription =
-      this._mixer?.subscribeToDeviceChanges((event) => {
-        this.updateMapsInSettings(event);
-      }) ?? null;
+  forceInputAudioPanelUpdate() {
+    if (!this._settings || !this._lastInputsMap || !this._audioPanel) {
+      return;
+    }
+
+    const map = this._settings.getInputNamesMap();
+    const updates = generateUpdateFromSingleState(map);
+
+    this._audioPanel.applyUpdate(updates, 'input');
   }
 
-  setSettingsMaps() {
+  inputsSettingsMapUpdated() {
+    if (!this._settings || !this._lastInputsMap || !this._audioPanel) {
+      return;
+    }
+
+    const newMap = this._settings.getInputNamesMap();
+
+    const updates = generateDiffUpdate(this._lastInputsMap, newMap);
+
+    this._lastInputsMap = newMap;
+
+    this._audioPanel.applyUpdate(updates, 'input');
+  }
+
+  setupAudioPanelChangesSubscription() {
+    if (!this._audioPanel) {
+      return;
+    }
+
+    this._audioPanelOutputsSub = this._audioPanel.subscribeToAdditions(
+      'output', () => {
+        this.setOutputsMapInSettings();
+        this.forceOutputAudioPanelUpdate();
+      });
+
+    // this._audioPanelInputsSub = this._audioPanel.subscribeToAdditions(
+    //   'input', this.setInputsMapInSettings.bind(this));
+  }
+
+  initialSettingsSetup() {
     this.setOutputsMapInSettings();
     this.setInputsMapInSettings();
+
+    this._lastOutputsMap = this._settings!.getOutputNamesMap();
+    this._lastInputsMap = this._settings!.getInputNamesMap();
   }
 
   setOutputsMapInSettings() {
-    const allOutputIds = this._audioPanel!.getDisplayedDeviceIds("output");
+    log('setOutputsMapInSettings');
+    if (!this._settings || !this._audioPanel) {
+      return;
+    }
+
+    const allOutputIds = this._audioPanel.getDisplayedDeviceIds("output");
     const allOriginalOutputNames = this._mixer
       ?.getAudioDevicesFromIds(allOutputIds, "output")
       ?.map(({ displayName }) => displayName);
-    if (allOriginalOutputNames) {
-      const existingOutputsMap = this._settings!.getOutputNamesMap();
-      const existingOriginalOutputs = Object.keys(existingOutputsMap);
-      const newDevices = allOriginalOutputNames.filter(name => 
-        !existingOriginalOutputs.includes(name));
 
-      const newSettings = {
-        ...existingOutputsMap,
-        ...newDevices.reduce((acc, originalDeviceName) => ({
-          ...acc,
-          [originalDeviceName]: originalDeviceName
-        }), {})
-      };
-
-      this._settings?.setOutputNamesMap(newSettings);
-      this._lastOutputsMap = newSettings;
+    if (!allOriginalOutputNames) {
+      return;
     }
+
+    const existingOutputsMap = this._settings.getOutputNamesMap();
+
+    log('current')
+    Object.keys(existingOutputsMap).forEach(key => {
+      log(`${key} : ${existingOutputsMap[key]}`)
+    });
+
+
+    const existingOriginalOutputs = Object.keys(existingOutputsMap);
+    const newDevices = allOriginalOutputNames.filter(name => 
+      !existingOriginalOutputs.includes(name));
+
+    const newSettings: NamesMap = {
+      ...existingOutputsMap,
+      ...newDevices.reduce((acc, originalDeviceName) => ({
+        ...acc,
+        [originalDeviceName]: originalDeviceName
+      }), {})
+    };
+
+    log('new')
+    Object.keys(newSettings).forEach(key => {
+      log(`${key} : ${newSettings[key]}`)
+    });
+
+    this._settings.setOutputNamesMap(newSettings);
   }
 
   setInputsMapInSettings() {
@@ -147,41 +197,30 @@ class Extension {
     const allOriginalInputNames = this._mixer
       ?.getAudioDevicesFromIds(allInputIds, "input")
       ?.map(({ displayName }) => displayName);
-    if (allOriginalInputNames) {
-      const existingInputsMap = this._settings!.getInputNamesMap();
-      const existingOriginalInputs = Object.keys(existingInputsMap);
-      const newDevices = allOriginalInputNames.filter(name => 
-        !existingOriginalInputs.includes(name));
 
-      const newSettings = {
-        ...existingInputsMap,
-        ...newDevices.reduce((acc, originalDeviceName) => ({
-          ...acc,
-          [originalDeviceName]: originalDeviceName
-        }), {})
-      };
-
-      this._settings?.setInputNamesMap(newSettings);
-      this._lastInputsMap = newSettings;
-    }
-  }
-
-  updateMapsInSettings(event: MixerEvent) {
-    if (!this._mixer) {
+    if (!allOriginalInputNames) {
       return;
     }
 
-    event.type == "output-added"
-      ? this.setOutputsMapInSettings()
-      : this.setInputsMapInSettings();
+    const existingInputsMap = this._settings!.getInputNamesMap();
+    const existingOriginalInputs = Object.keys(existingInputsMap);
+    const newDevices = allOriginalInputNames.filter(name => 
+      !existingOriginalInputs.includes(name));
+
+    const newSettings = {
+      ...existingInputsMap,
+      ...newDevices.reduce((acc, originalDeviceName) => ({
+        ...acc,
+        [originalDeviceName]: originalDeviceName
+      }), {})
+    };
+
+    this._settings?.setInputNamesMap(newSettings);
   }
 
   disable() {
     log(`Disabling extension ${this._uuid}`);
 
-    if (this._mixerSubscription) {
-      this._mixer?.unsubscribe(this._mixerSubscription);
-    }
     this._mixer?.dispose();
 
     if (this._outputSettingsSubscription) {
@@ -192,6 +231,16 @@ class Extension {
     if (this._inputSettingsSubscription) {
       this._settings?.disconnect(this._inputSettingsSubscription!);
       this._inputSettingsSubscription = null;
+    }
+
+    if (this._audioPanelOutputsSub) {
+      this._audioPanel?.unsubscribeFromAdditions(this._audioPanelOutputsSub);
+      this._audioPanelOutputsSub = null;
+    }
+
+    if (this._audioPanelInputsSub) {
+      this._audioPanel?.unsubscribeFromAdditions(this._audioPanelInputsSub);
+      this._audioPanelInputsSub = null;
     }
 
     this.restoreAllDevicesNames();
@@ -205,7 +254,6 @@ class Extension {
     this._lastOutputsMap = null;
     this._lastInputsMap = null;
     this._mixer = null;
-    this._mixerSubscription = null;
   }
 
   restoreAllDevicesNames() {
@@ -221,7 +269,7 @@ class Extension {
         });
       });
 
-      this._audioPanel?.updateDevicesNames(updates, 'output');
+      this._audioPanel?.applyUpdate(updates, 'output');
     }
 
     const inputsMap = this._settings?.getInputNamesMap();
@@ -236,7 +284,7 @@ class Extension {
         });
       });
 
-      this._audioPanel?.updateDevicesNames(updates, 'input');
+      this._audioPanel?.applyUpdate(updates, 'input');
     }
 
   }

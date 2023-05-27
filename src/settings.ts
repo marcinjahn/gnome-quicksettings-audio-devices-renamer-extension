@@ -20,14 +20,14 @@ export class SettingsUtils {
     return this.settings;
   }
 
-  getOutputNamesMap(): Record<string, string> {
+  getOutputNamesMap(): NamesMap {
     const settings = this.getSettings();
     const value = settings.get_value(OutputNamesMap);
 
-    return value.recursiveUnpack() as Record<string, string>;
+    return value.recursiveUnpack() as NamesMap;
   }
 
-  setOutputNamesMap(values: Record<string, string>) {
+  setOutputNamesMap(values: NamesMap) {
     const settings = this.getSettings();
     settings.set_value(OutputNamesMap, new Variant('a{ss}', values));
   }
@@ -39,14 +39,14 @@ export class SettingsUtils {
     this.setOutputNamesMap(values);
   }
 
-  getInputNamesMap(): Record<string, string> {
+  getInputNamesMap(): NamesMap {
     const settings = this.getSettings();
     const value = settings.get_value(InputNamesMap);
 
-    return value.recursiveUnpack() as Record<string, string>;
+    return value.recursiveUnpack() as NamesMap;
   }
 
-  setInputNamesMap(values: Record<string, string>) {
+  setInputNamesMap(values: NamesMap) {
     const settings = this.getSettings();
     settings.set_value(InputNamesMap, new Variant('a{ss}', values));
   }
@@ -70,3 +70,7 @@ export class SettingsUtils {
     this.settings = null;
   }
 }
+
+export type OriginalName = string;
+export type CustomName = string;
+export type NamesMap = Record<OriginalName, CustomName>;

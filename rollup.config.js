@@ -15,7 +15,6 @@ const globals = {
   "@gi-types/glib2": "imports.gi.GLib",
   '@gi-ts/adw1': "imports.gi.Adw",
   '@gi-ts/glib2': "imports.gi.GLib",
-  '@gi-ts/glib2': "imports.gi.GLib"
 };
 
 const external = [...Object.keys(globals)];
