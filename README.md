@@ -4,16 +4,20 @@
 <img src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/8e9404e349a0cf6c235cf69394a6292c6eef4cae/img/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions"/>
 </a>
 
-This is a Gnome Shell Extension that allows you to hide the devices that you do
-not need in the Quick Settings Audio Panel. It supports both output and input devices. It makes it easier to switch fast
-between your audio devices when the panel is decluttered from the entries you're
-not going to ever choose anyway.
+This is a Gnome Shell Extension that allows you to rename the devices that you
+ see in the Quick Settings Audio Panel. It supports both output and input
+devices. It makes it easier to switch fast between your audio devices when their
+names are a bit less explicit, as it is by default.
+
+For example, instead of having "Speaker - Family 17h/19h HD Audio Controller" in
+the panel, you could simply have it as "Laptop Speakers", or whatever else you'd
+want to see there.
 
 ![Gnome Outputs in Quick Settings](./img/audio-panel.png)
 
 ## Configuration
 
-The shown/hidden devices may be configured via preferences window.
+The devices names may be configured via preferences window.
 
 ### Output Devices
 
@@ -25,19 +29,12 @@ The shown/hidden devices may be configured via preferences window.
 
 ## Remarks
 
-Note that the extension does not disable the device in the system. All the devices
-are still going to be visible in the Control Panel. All this extension does is
-to hide the unneeded devices from the Quick Settings panel.
+- note that the extension does not rename the devices "deep" in the system. It
+only renames their labels in the Gnome Shell Quick Setting Audio Panel. If
+anything looks fishy to you, all you got to do is disable the extension, and
+re-login to your system. All names will be restored to their original form.
 
-This extension does not play well with the [Quick Settings Audio
-Panel](https://extensions.gnome.org/extension/5940/quick-settings-audio-panel/)
-extension. Its option to "Always show microphone volume slider" might not work
-when Quick Settings Audio Devices Hider is enabled. A workaround could be to
-install [[QSTweak] Quick Setting
-Tweaker](https://extensions.gnome.org/extension/5446/quick-settings-tweaker/),
-which has a similar functionality under the toggle "Always show input" under
-the "Input/Output" tab.
-
-## Mentions
-
-- [OMG! Ubuntu](https://www.omgubuntu.co.uk/2023/05/hide-audio-devices-gnome-quick-settings)
+- if, in addition to renaming your devices, you'd also like to remove some of
+them from Quick Settings, try out my [Quick Settings Audio Devices
+Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension)
+extension
