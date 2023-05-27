@@ -3,7 +3,7 @@ import {
   SOURCE_REMOVE,
   timeout_add,
   Source,
-} from "@gi-types/glib2";
+} from "@gi-ts/glib2";
 
 let timeoutSourceIds: number[] | null = [];
 

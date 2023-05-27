@@ -6,6 +6,7 @@
   "scripts": {
     "prepare": "husky install",
     "clean": "rm -rf ./dist",
+    "generate-gi-ts": "gi-ts generate && find ./@gi-ts -type f -exec sed -i '1i// @ts-nocheck' {} \\;",
     "build": "glib-compile-schemas resources/schemas/ && npm run clean && rollup -c",
     "start:dev:wayland": "npm run build && dbus-run-session -- gnome-shell --nested --wayland",
     "linkdist": "ln -s \"$PWD/dist\" \"$HOME/.local/share/gnome-shell/extensions/quicksettings-audio-devices-renamer@marcinjahn.com\"",
@@ -28,12 +29,10 @@
     "rollup": "^2.78.1",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-styles": "^4.0.0"
+    "rollup-plugin-styles": "^4.0.0",
+    "@gi.ts/cli": "^1.5.10"
   },
   "dependencies": {
-    "@gi-types/gio2": "^2.72.1",
-    "@gi-types/glib2": "^2.72.1",
-    "@gi-types/gtk4": "^4.6.1",
     "@gi-types/gvc1": "^1.0.1",
     "typescript": "5.0.4"
   }
