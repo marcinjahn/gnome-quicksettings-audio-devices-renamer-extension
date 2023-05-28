@@ -132,13 +132,19 @@ class Extension {
     this._audioPanelOutputsSub = this._audioPanel.subscribeToAdditions(
       "output",
       () => {
+        log("NEW STUFF");
         this.setOutputsMapInSettings();
         this.forceOutputAudioPanelUpdate();
       }
     );
 
-    // this._audioPanelInputsSub = this._audioPanel.subscribeToAdditions(
-    //   'input', this.setInputsMapInSettings.bind(this));
+    this._audioPanelOutputsSub = this._audioPanel.subscribeToAdditions(
+      "input",
+      () => {
+        this.setInputsMapInSettings();
+        this.forceInputAudioPanelUpdate();
+      }
+    );
   }
 
   initialSettingsSetup() {
@@ -241,12 +247,18 @@ class Extension {
     }
 
     if (this._audioPanelOutputsSub) {
-      this._audioPanel?.unsubscribeFromAdditions(this._audioPanelOutputsSub);
+      this._audioPanel?.unsubscribeFromAdditions(
+        "output",
+        this._audioPanelOutputsSub
+      );
       this._audioPanelOutputsSub = null;
     }
 
     if (this._audioPanelInputsSub) {
-      this._audioPanel?.unsubscribeFromAdditions(this._audioPanelInputsSub);
+      this._audioPanel?.unsubscribeFromAdditions(
+        "input",
+        this._audioPanelInputsSub
+      );
       this._audioPanelInputsSub = null;
     }
 
