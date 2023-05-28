@@ -5,7 +5,7 @@
 </a>
 
 This is a Gnome Shell Extension that allows you to rename the devices that you
- see in the Quick Settings Audio Panel. It supports both output and input
+see in the Quick Settings Audio Panel. It supports both output and input
 devices. It makes it easier to switch fast between your audio devices when their
 names are a bit less explicit, as it is by default.
 
@@ -30,11 +30,11 @@ The devices names may be configured via preferences window.
 ## Remarks
 
 - note that the extension does not rename the devices "deep" in the system. It
-only renames their labels in the Gnome Shell Quick Setting Audio Panel. If
-anything looks fishy to you, all you got to do is disable the extension, and
-re-login to your system. All names will be restored to their original form.
+  only renames their labels in the Gnome Shell Quick Setting Audio Panel. If
+  anything looks fishy to you, all you got to do is disable the extension, and
+  re-login to your system. All names will be restored to their original form.
 
 - if, in addition to renaming your devices, you'd also like to remove some of
-them from Quick Settings, try out my [Quick Settings Audio Devices
-Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension)
-extension
+  them from Quick Settings, try out my [Quick Settings Audio Devices
+  Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension)
+  extension. "Renamer" is compatible with "Hider" v9 and up.
