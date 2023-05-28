@@ -1,2 +1,2 @@
-export * from './audio-panel';
-export * from './update-generator';
+export * from "./audio-panel";
+export * from "./generate-update";
