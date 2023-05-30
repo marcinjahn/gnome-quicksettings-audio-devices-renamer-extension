@@ -1,11 +1,5 @@
 import { ObservableMap } from "utils/observable-map";
 import { DeviceType } from "../identification";
-import {
-  source_remove,
-  PRIORITY_DEFAULT,
-  SOURCE_CONTINUE,
-  timeout_add,
-} from "@gi-ts/glib2";
 
 const Main = imports.ui.main;
 const QuickSettings = Main.panel.statusArea.quickSettings;
@@ -61,23 +55,6 @@ export class AudioPanel {
     }
 
     return observableMap.subscribe(handler);
-
-    // let lastCount = this.getDevicesCount(type);
-
-    // return timeout_add(PRIORITY_DEFAULT, 5000, () => {
-    //   const newCount = this.getDevicesCount(type);
-
-    //   log('newCount: ' + newCount);
-
-    //   if (newCount > lastCount) {
-    //     lastCount = newCount;
-    //     handler();
-    //   } else {
-    //     lastCount = newCount;
-    //   }
-
-    //   return SOURCE_CONTINUE;
-    // });
   }
 
   unsubscribeFromAdditions(type: DeviceType, subscriptionId: SubscriptionId) {
@@ -92,15 +69,7 @@ export class AudioPanel {
     }
 
     (volume._deviceItems as ObservableMap).unsubscribe(subscriptionId);
-
-    // source_remove(subscriptionId);
   }
-
-  // private getDevicesCount(type: DeviceType) {
-  //   return QuickSettings
-  //   ._volume[type === 'output' ? '_output' : '_input']
-  //   ._deviceItems.size;
-  // }
 }
 
 export interface UpdateType {

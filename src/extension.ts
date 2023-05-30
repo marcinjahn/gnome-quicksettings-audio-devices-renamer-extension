@@ -1,4 +1,4 @@
-import { disposeDelayTimeouts } from "./utils/delay";
+import { delay, disposeDelayTimeouts } from "./utils/delay";
 
 import {
   AudioPanel,
@@ -6,7 +6,11 @@ import {
   generateDiffUpdate,
   generateUpdateFromSingleState,
 } from "./audio-panel";
-import { AudioPanelMixerSource, MixerWrapper } from "./mixer";
+import {
+  AudioPanelMixerSource,
+  MixerSubscription,
+  MixerWrapper,
+} from "./mixer";
 import {
   InputNamesMap,
   NamesMap,
@@ -14,6 +18,10 @@ import {
   SettingsUtils,
 } from "./settings";
 import { reverseNamesMap } from "utils/names-map-utils";
+import {
+  renameTweakerLabel,
+  restoreQuickSettingsTweaker,
+} from "integration/quick-settings-tweaker";
 
 class Extension {
   private _uuid: string | null = null;
@@ -26,6 +34,7 @@ class Extension {
   private _lastInputsMap: NamesMap | null = null;
   private _audioPanelOutputsSub: SubscriptionId | null = null;
   private _audioPanelInputsSub: SubscriptionId | null = null;
+  private _activeDeviceSub: MixerSubscription | null = null;
 
   constructor(uuid: string) {
     this._uuid = uuid;
@@ -40,16 +49,32 @@ class Extension {
     new AudioPanelMixerSource().getMixer().then((mixer) => {
       this._mixer = mixer;
 
-      // TEMPORARY, for fresh start
-      // this._settings?.setInputNamesMap({});
-      // this._settings?.setOutputNamesMap({});
-
       this.setupSettingMapsChangesHandling();
       this.initialSettingsSetup();
       this.setupAudioPanelChangesSubscription();
+      this.setupAcitveDeviceChangesSubscription();
 
       this.forceOutputAudioPanelUpdate();
       this.forceInputAudioPanelUpdate();
+
+      this.updateQuickSettingsTweaker();
+    });
+  }
+  updateQuickSettingsTweaker() {
+    // Allow Quick Settings Tweaker to load
+    delay(500).then(() => {
+      if (!this._settings) {
+        return;
+      }
+
+      const maps = {
+        ...this._settings.getOutputNamesMap(),
+        ...this._settings.getInputNamesMap(),
+      };
+
+      Object.keys(maps).forEach((originalName) => {
+        renameTweakerLabel(originalName, maps[originalName]);
+      });
     });
   }
 
@@ -75,15 +100,8 @@ class Extension {
     }
 
     const newMap = this._settings.getOutputNamesMap();
-
     const updates = generateDiffUpdate(this._lastOutputsMap, newMap);
-
     this._lastOutputsMap = newMap;
-
-    log("updates");
-    updates.forEach((update) => {
-      log(`${update.oldName} : ${update.newName}`);
-    });
 
     this._audioPanel.applyUpdate(updates, "output");
   }
@@ -132,7 +150,6 @@ class Extension {
     this._audioPanelOutputsSub = this._audioPanel.subscribeToAdditions(
       "output",
       () => {
-        log("NEW STUFF");
         this.setOutputsMapInSettings();
         this.forceOutputAudioPanelUpdate();
       }
@@ -147,6 +164,46 @@ class Extension {
     );
   }
 
+  /**
+   * Quick Settings Tweaker extension integration
+   */
+  setupAcitveDeviceChangesSubscription() {
+    this._mixer?.subscribeToActiveDeviceChanges((event) => {
+      // delay due to race condition with Quick Settings Tweaker
+      delay(200).then(() => {
+        if (!this._mixer || !this._settings) {
+          return;
+        }
+
+        const deviceType =
+          event.type === "active-output-update" ? "output" : "input";
+
+        const devices = this._mixer.getAudioDevicesFromIds(
+          [event.deviceId],
+          deviceType
+        );
+
+        if (devices.length < 1) {
+          return;
+        }
+
+        const map =
+          deviceType === "output"
+            ? this._settings.getOutputNamesMap()
+            : this._settings.getInputNamesMap();
+
+        const originalName = devices[0].displayName;
+        const customName = map[originalName];
+
+        if (!customName) {
+          return;
+        }
+
+        renameTweakerLabel(originalName, customName);
+      });
+    });
+  }
+
   initialSettingsSetup() {
     this.setOutputsMapInSettings();
     this.setInputsMapInSettings();
@@ -156,7 +213,6 @@ class Extension {
   }
 
   setOutputsMapInSettings() {
-    log("setOutputsMapInSettings");
     if (!this._settings || !this._audioPanel) {
       return;
     }
@@ -171,11 +227,6 @@ class Extension {
     }
 
     const existingOutputsMap = this._settings.getOutputNamesMap();
-
-    log("current");
-    Object.keys(existingOutputsMap).forEach((key) => {
-      log(`${key} : ${existingOutputsMap[key]}`);
-    });
 
     const existingOriginalOutputs = Object.keys(existingOutputsMap);
     const newDevices = allOriginalOutputNames.filter(
@@ -192,11 +243,6 @@ class Extension {
         {}
       ),
     };
-
-    log("new");
-    Object.keys(newSettings).forEach((key) => {
-      log(`${key} : ${newSettings[key]}`);
-    });
 
     this._settings.setOutputNamesMap(newSettings);
   }
@@ -234,6 +280,11 @@ class Extension {
   disable() {
     log(`Disabling extension ${this._uuid}`);
 
+    if (this._activeDeviceSub) {
+      this._mixer?.unsubscribe(this._activeDeviceSub);
+      this._activeDeviceSub = null;
+    }
+
     this._mixer?.dispose();
 
     if (this._outputSettingsSubscription) {
@@ -264,6 +315,13 @@ class Extension {
 
     this.restoreOutputs();
     this.restoreInputs();
+
+    if (this._settings) {
+      restoreQuickSettingsTweaker(
+        this._settings.getOutputNamesMap(),
+        this._settings.getInputNamesMap()
+      );
+    }
 
     disposeDelayTimeouts();
 

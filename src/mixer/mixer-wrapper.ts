@@ -8,10 +8,7 @@ import { DisplayName } from "identification/display-name";
 export class MixerWrapper {
   constructor(private mixer: MixerControl, private disposal: () => void) {}
 
-  getAudioDevicesFromIds(
-    ids: number[],
-    type: DeviceType = "output"
-  ): AudioDevice[] {
+  getAudioDevicesFromIds(ids: number[], type: DeviceType): AudioDevice[] {
     return ids.map((id) => {
       const lookup =
         type === "output"
@@ -51,18 +48,20 @@ export class MixerWrapper {
     );
   }
 
-  subscribeToDeviceChanges(
+  subscribeToActiveDeviceChanges(
     callback: (event: MixerEvent) => void
   ): MixerSubscription {
-    const addOutputId = this.mixer.connect("output-added", (_, deviceId) =>
-      callback({ deviceId, type: "output-added" })
+    const outputSubId = this.mixer.connect(
+      "active-output-update",
+      (_, deviceId) => callback({ deviceId, type: "active-output-update" })
     );
 
-    const addInputId = this.mixer.connect("input-added", (_, deviceId) =>
-      callback({ deviceId, type: "input-added" })
+    const inputSubId = this.mixer.connect(
+      "active-input-update",
+      (_, deviceId) => callback({ deviceId, type: "active-input-update" })
     );
 
-    return { ids: [addOutputId, addInputId] };
+    return { ids: [outputSubId, inputSubId] };
   }
 
   unsubscribe(subscription: MixerSubscription) {
