@@ -1,18 +1,15 @@
 import { DeviceType } from "identification";
-import { SettingsUtils } from "./settings";
+import { CustomName, OriginalName, SettingsUtils } from "./settings";
 import {
   PreferencesPage,
   PreferencesGroup,
   PreferencesWindow,
   EntryRow,
-  ToastOverlay,
   Toast,
   ToastPriority,
 } from "@gi-ts/adw1";
 import { validate } from "settings-validation";
-import { Label } from "@gi-ts/gtk4";
-
-//TODO: Disallow to have duplicate names!
+import { Button } from "@gi-ts/gtk4";
 
 function init() {}
 
@@ -20,7 +17,6 @@ function fillPreferencesWindow(window: PreferencesWindow) {
   const settings = new SettingsUtils();
 
   window.add(createOutputsPage(settings, window));
-
   window.add(createInputsPage(settings, window));
 }
 
@@ -89,32 +85,72 @@ function createDeviceRow(
     show_apply_button: true,
   });
 
-  row.connect("apply", ({ title, text }) => {
-    const currentMap =
-      type === "output"
-        ? settings.getOutputNamesMap()
-        : settings.getInputNamesMap();
-
-    const newMap = {
-      ...currentMap,
-      [title]: text,
-    };
-
-    const validation = validate(newMap);
-
-    if (!validation.isOk) {
-      displayError(window, validation.errorMessage!);
-    } else {
-      type === "output"
-        ? settings.setOutputNamesMap(newMap)
-        : settings.setInputNamesMap(newMap);
-    }
+  const resetButton = new Button({
+    icon_name: "view-refresh",
+    has_frame: false,
+    tooltip_text: "Restore original name",
   });
 
-  // TODO: Add reset button to a row to restore original name
-  // row.add_suffix(toggle);
+  resetButton.connect("clicked", () => {
+    row.text = originalName;
+    restoreDevice(type, settings, originalName);
+  });
+
+  row.add_suffix(resetButton);
+
+  row.connect("apply", ({ title, text }) => {
+    applyCustomName(type, settings, title, text, window);
+  });
 
   return row;
+}
+
+function applyCustomName(
+  type: string,
+  settings: SettingsUtils,
+  originalName: OriginalName,
+  customName: CustomName,
+  window: PreferencesWindow
+) {
+  const currentMap =
+    type === "output"
+      ? settings.getOutputNamesMap()
+      : settings.getInputNamesMap();
+
+  const newMap = {
+    ...currentMap,
+    [originalName]: customName,
+  };
+
+  const validation = validate(newMap);
+
+  if (!validation.isOk) {
+    displayError(window, validation.errorMessage!);
+  } else {
+    type === "output"
+      ? settings.setOutputNamesMap(newMap)
+      : settings.setInputNamesMap(newMap);
+  }
+}
+
+function restoreDevice(
+  type: string,
+  settings: SettingsUtils,
+  originalName: string
+) {
+  const currentMap =
+    type === "output"
+      ? settings.getOutputNamesMap()
+      : settings.getInputNamesMap();
+
+  const newMap = {
+    ...currentMap,
+    [originalName]: originalName,
+  };
+
+  type === "output"
+    ? settings.setOutputNamesMap(newMap)
+    : settings.setInputNamesMap(newMap);
 }
 
 function displayError(window: PreferencesWindow, error: string) {
