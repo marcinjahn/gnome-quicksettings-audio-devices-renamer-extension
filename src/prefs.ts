@@ -31,7 +31,7 @@ function createOutputsPage(
 
   const group = new PreferencesGroup({
     title: "Output Audio Devices",
-    description: "Each rename needs to be applied",
+    description: "Rename devices and apply the changes",
   });
   page.add(group);
 
@@ -57,7 +57,7 @@ function createInputsPage(
 
   const group = new PreferencesGroup({
     title: "Input Audio Devices",
-    description: "Each rename needs to be applied",
+    description: "Rename devices and apply the changes",
   });
   page.add(group);
 

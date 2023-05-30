@@ -13,7 +13,7 @@ For example, instead of having "Speaker - Family 17h/19h HD Audio Controller" in
 the panel, you could simply have it as "Laptop Speakers", or whatever else you'd
 want to see there.
 
-![Gnome Outputs in Quick Settings](./img/audio-panel.png)
+![Gnome Outputs in Quick Settings](./img/audio-panel.webp)
 
 ## Configuration
 
