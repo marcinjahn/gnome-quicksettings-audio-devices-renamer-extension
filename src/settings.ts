@@ -1,5 +1,5 @@
 import { Settings } from "@gi-ts/gio2";
-import {Variant} from '@gi-ts/glib2';
+import { Variant } from "@gi-ts/glib2";
 
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -29,14 +29,7 @@ export class SettingsUtils {
 
   setOutputNamesMap(values: NamesMap) {
     const settings = this.getSettings();
-    settings.set_value(OutputNamesMap, new Variant('a{ss}', values));
-  }
-
-  updateOutputName(originalName: string, newName: string) {
-    const values = this.getOutputNamesMap();
-    values[originalName] = newName;
-
-    this.setOutputNamesMap(values);
+    settings.set_value(OutputNamesMap, new Variant("a{ss}", values));
   }
 
   getInputNamesMap(): NamesMap {
@@ -48,14 +41,7 @@ export class SettingsUtils {
 
   setInputNamesMap(values: NamesMap) {
     const settings = this.getSettings();
-    settings.set_value(InputNamesMap, new Variant('a{ss}', values));
-  }
-
-  updateInputName(originalName: string, newName: string) {
-    const values = this.getInputNamesMap();
-    values[originalName] = newName;
-    
-    this.setInputNamesMap(values);
+    settings.set_value(InputNamesMap, new Variant("a{ss}", values));
   }
 
   connectToChanges(settingName: string, func: () => void): number {
