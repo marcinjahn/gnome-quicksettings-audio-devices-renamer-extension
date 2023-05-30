@@ -1,8 +1,8 @@
 # <img width="32px" src="./img/icon-128.webp" alt="project icon" /> Quick Settings Audio Devices Renamer Gnome Extension
 
-<a href="https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-hider/">
+<!-- <a href="https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-hider/">
 <img src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/8e9404e349a0cf6c235cf69394a6292c6eef4cae/img/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions"/>
-</a>
+</a> -->
 
 This is a Gnome Shell Extension that allows you to rename the devices that you
 see in the Quick Settings Audio Panel. It supports both output and input
