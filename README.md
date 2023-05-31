@@ -19,13 +19,13 @@ want to see there.
 
 The devices names may be configured via preferences window.
 
-### Output Devices
+<!-- ### Output Devices -->
 
-<img alt="Output Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/outputs-preferences.png?raw=true" width="80%">
+<!-- <img alt="Output Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/outputs-preferences.png?raw=true" width="80%"> -->
+<!--
+### Input Devices -->
 
-### Input Devices
-
-<img alt="Input Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/inputs-preferences.png?raw=true" width="80%">
+<!-- <img alt="Input Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/inputs-preferences.png?raw=true" width="80%"> -->
 
 ## Remarks
 
