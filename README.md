@@ -1,4 +1,4 @@
-# <img width="32px" src="./img/icon-128.webp" alt="project icon" /> Quick Settings Audio Devices Renamer Gnome Extension
+# <img width="32px" src="./img/icon-128.webp" alt="project icon" /> Quick Settings Audio Devices Renamer (Gnome Extension)
 
 <!-- <a href="https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-renamer/">
 <img src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/c015545cc7ea29968553494d1688069e57518b4e/img/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions"/>
