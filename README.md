@@ -1,7 +1,7 @@
 # <img width="32px" src="./img/icon-128.webp" alt="project icon" /> Quick Settings Audio Devices Renamer Gnome Extension
 
-<!-- <a href="https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-hider/">
-<img src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/8e9404e349a0cf6c235cf69394a6292c6eef4cae/img/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions"/>
+<!-- <a href="https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-renamer/">
+<img src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/c015545cc7ea29968553494d1688069e57518b4e/img/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions"/>
 </a> -->
 
 This is a Gnome Shell Extension that lets you change the names of your audio
@@ -19,13 +19,13 @@ want to see there.
 
 The devices names may be configured via preferences window.
 
-<!-- ### Output Devices -->
+### Output Devices
 
-<!-- <img alt="Output Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/outputs-preferences.png?raw=true" width="80%"> -->
-<!--
-### Input Devices -->
+<img alt="Output Settings" src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/main/img/outputs-preferences.png" width="80%">
 
-<!-- <img alt="Input Settings" src="https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/blob/main/img/inputs-preferences.png?raw=true" width="80%"> -->
+### Input Devices
+
+<img alt="Input Settings" src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/main/img/inputs-preferences.png" width="80%">
 
 ## Remarks
 
@@ -37,8 +37,8 @@ The devices names may be configured via preferences window.
   them from Quick Settings, try out my [Quick Settings Audio Devices
   Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension)
   extension. "Renamer" is compatible with "Hider" v9 and up.
-- this extension is compatible with the "Show current output/input
-  selection" option of the [Quick Settings Tweaker
+- this extension is compatible with the "Show current output/input selection"
+  option of the [Quick Settings Tweaker
   extension](https://extensions.gnome.org/extension/5446/quick-settings-tweaker/).
   Even if you've installed Quick Setting Tweaker and have this option enabled,
   outputs/inputs should be correctly displaying in the Quick Settings panel.

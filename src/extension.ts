@@ -19,8 +19,8 @@ import {
 } from "./settings";
 import { reverseNamesMap } from "utils/names-map-utils";
 import {
-  renameTweakerLabel,
-  restoreQuickSettingsTweaker,
+  applyUpdateToQst,
+  restoreQst,
 } from "integration/quick-settings-tweaker";
 
 class Extension {
@@ -57,23 +57,26 @@ class Extension {
       this.forceOutputAudioPanelUpdate();
       this.forceInputAudioPanelUpdate();
 
-      this.updateQuickSettingsTweaker();
+      // Allow Quick Settings Tweaker to load and apply its changes
+      delay(500).then(() => {
+        this.updateQuickSettingsTweaker();
+      });
     });
   }
   updateQuickSettingsTweaker() {
-    // Allow Quick Settings Tweaker to load
-    delay(500).then(() => {
-      if (!this._settings) {
-        return;
-      }
+    if (!this._settings) {
+      return;
+    }
 
-      const maps = {
-        ...this._settings.getOutputNamesMap(),
-        ...this._settings.getInputNamesMap(),
-      };
+    const maps = {
+      ...this._settings.getOutputNamesMap(),
+      ...this._settings.getInputNamesMap(),
+    };
 
-      Object.keys(maps).forEach((originalName) => {
-        renameTweakerLabel(originalName, maps[originalName]);
+    Object.keys(maps).forEach((originalName) => {
+      applyUpdateToQst({
+        oldName: originalName,
+        newName: maps[originalName],
       });
     });
   }
@@ -104,6 +107,20 @@ class Extension {
     this._lastOutputsMap = newMap;
 
     this._audioPanel.applyUpdate(updates, "output");
+    updates.forEach((update) => applyUpdateToQst(update));
+  }
+
+  inputsSettingsMapUpdated() {
+    if (!this._settings || !this._lastInputsMap || !this._audioPanel) {
+      return;
+    }
+
+    const newMap = this._settings.getInputNamesMap();
+    const updates = generateDiffUpdate(this._lastInputsMap, newMap);
+    this._lastInputsMap = newMap;
+
+    this._audioPanel.applyUpdate(updates, "input");
+    updates.forEach((update) => applyUpdateToQst(update));
   }
 
   forceOutputAudioPanelUpdate() {
@@ -124,20 +141,6 @@ class Extension {
 
     const map = this._settings.getInputNamesMap();
     const updates = generateUpdateFromSingleState(map);
-
-    this._audioPanel.applyUpdate(updates, "input");
-  }
-
-  inputsSettingsMapUpdated() {
-    if (!this._settings || !this._lastInputsMap || !this._audioPanel) {
-      return;
-    }
-
-    const newMap = this._settings.getInputNamesMap();
-
-    const updates = generateDiffUpdate(this._lastInputsMap, newMap);
-
-    this._lastInputsMap = newMap;
 
     this._audioPanel.applyUpdate(updates, "input");
   }
@@ -199,7 +202,10 @@ class Extension {
           return;
         }
 
-        renameTweakerLabel(originalName, customName);
+        applyUpdateToQst({
+          oldName: originalName,
+          newName: customName,
+        });
       });
     });
   }
@@ -317,7 +323,7 @@ class Extension {
     this.restoreInputs();
 
     if (this._settings) {
-      restoreQuickSettingsTweaker(
+      restoreQst(
         this._settings.getOutputNamesMap(),
         this._settings.getInputNamesMap()
       );

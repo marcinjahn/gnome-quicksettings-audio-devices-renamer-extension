@@ -1,22 +1,17 @@
-import { CustomName, NamesMap, OriginalName } from "settings";
+import { UpdateType } from "models/update-type";
+import { NamesMap } from "settings";
 
-export function renameTweakerLabel(
-  originalName: OriginalName,
-  customName: CustomName
-) {
-  const tweakerLabel = getTweakerLabel(originalName);
+export function applyUpdateToQst({ oldName, newName }: UpdateType) {
+  const tweakerLabel = getTweakerLabel(oldName);
 
   if (!tweakerLabel) {
     return;
   }
 
-  tweakerLabel.text = customName;
+  tweakerLabel.text = newName;
 }
 
-export function restoreQuickSettingsTweaker(
-  outputs: NamesMap,
-  inputs: NamesMap
-) {
+export function restoreQst(outputs: NamesMap, inputs: NamesMap) {
   restore(outputs);
   restore(inputs);
 }

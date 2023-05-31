@@ -1,5 +1,6 @@
 import { ObservableMap } from "utils/observable-map";
 import { DeviceType } from "../identification";
+import { UpdateType } from "models/update-type";
 
 const Main = imports.ui.main;
 const QuickSettings = Main.panel.statusArea.quickSettings;
@@ -70,11 +71,6 @@ export class AudioPanel {
 
     (volume._deviceItems as ObservableMap).unsubscribe(subscriptionId);
   }
-}
-
-export interface UpdateType {
-  oldName: string;
-  newName: string;
 }
 
 export type SubscriptionId = number;

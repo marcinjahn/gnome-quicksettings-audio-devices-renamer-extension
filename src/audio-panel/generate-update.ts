@@ -1,5 +1,5 @@
+import { UpdateType } from "models/update-type";
 import { NamesMap } from "../settings";
-import { UpdateType } from "./audio-panel";
 
 export function generateDiffUpdate(
   currentState: NamesMap,
