@@ -1,6 +1,6 @@
 {
   "name": "Quick Settings Audio Devices Renamer",
-  "description": "It lets you change the names of your audio devices in the Quick Settings Audio Panel. This works for both speakers and microphones. It's useful when you need to switch quickly between different audio devices and their default names aren't very clear or they're a bit too explicit. This extension makes it easy to customize devices names so that, e.g. \"Speaker - Family 17h/19h HD Audio Controller\" could become just \"Laptop Speakers\".",
+  "description": "It lets you change the names of your audio devices in the Quick Settings Audio Panel. This works for both speakers and microphones. It's useful when you need to switch quickly between different audio devices and their default names aren't very clear or they're a bit too explicit. This extension makes it easy to customize devices names so that, e.g. \"Speaker - Family 17h/19h HD Audio Controller\" could become just \"Laptop Speakers\". Emojis are supported as well!\n\nCheck out the https://extensions.gnome.org/extension/5964/quick-settings-audio-devices-hider/ if some device should rather be hidden than renamed",
   "uuid": "quicksettings-audio-devices-renamer@marcinjahn.com",
   "shell-version": ["44"],
   "url": "https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension",
