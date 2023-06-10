@@ -1,7 +1,7 @@
 import { delay, disposeDelayTimeouts } from "./utils/delay";
 
 import {
-  AudioPanel,
+  AudioPanelWrapper,
   SubscriptionId,
   generateDiffUpdate,
   generateUpdateFromSingleState,
@@ -26,7 +26,7 @@ import {
 class Extension {
   private _uuid: string | null = null;
   private _mixer: MixerWrapper | null = null;
-  private _audioPanel: AudioPanel | null = null;
+  private _audioPanel: AudioPanelWrapper | null = null;
   private _settings: SettingsUtils | null = null;
   private _outputSettingsSubscription: number | null = null;
   private _inputSettingsSubscription: number | null = null;
@@ -43,7 +43,7 @@ class Extension {
   enable() {
     log(`Enabling extension ${this._uuid}`);
 
-    this._audioPanel = new AudioPanel();
+    this._audioPanel = new AudioPanelWrapper();
     this._settings = new SettingsUtils();
 
     new AudioPanelMixerSource().getMixer().then((mixer) => {
@@ -219,13 +219,13 @@ class Extension {
   }
 
   setOutputsMapInSettings() {
-    if (!this._settings || !this._audioPanel) {
+    if (!this._audioPanel || !this._mixer || !this._settings) {
       return;
     }
 
     const allOutputIds = this._audioPanel.getDisplayedDeviceIds("output");
     const allOriginalOutputNames = this._mixer
-      ?.getAudioDevicesFromIds(allOutputIds, "output")
+      .getAudioDevicesFromIds(allOutputIds, "output")
       ?.map(({ displayName }) => displayName);
 
     if (!allOriginalOutputNames) {
@@ -254,16 +254,20 @@ class Extension {
   }
 
   setInputsMapInSettings() {
-    const allInputIds = this._audioPanel!.getDisplayedDeviceIds("input");
+    if (!this._audioPanel || !this._mixer || !this._settings) {
+      return;
+    }
+
+    const allInputIds = this._audioPanel.getDisplayedDeviceIds("input");
     const allOriginalInputNames = this._mixer
-      ?.getAudioDevicesFromIds(allInputIds, "input")
+      .getAudioDevicesFromIds(allInputIds, "input")
       ?.map(({ displayName }) => displayName);
 
     if (!allOriginalInputNames) {
       return;
     }
 
-    const existingInputsMap = this._settings!.getInputNamesMap();
+    const existingInputsMap = this._settings.getInputNamesMap();
     const existingOriginalInputs = Object.keys(existingInputsMap);
     const newDevices = allOriginalInputNames.filter(
       (name) => !existingOriginalInputs.includes(name)
@@ -280,7 +284,7 @@ class Extension {
       ),
     };
 
-    this._settings?.setInputNamesMap(newSettings);
+    this._settings.setInputNamesMap(newSettings);
   }
 
   disable() {

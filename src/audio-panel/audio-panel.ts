@@ -5,7 +5,7 @@ import { UpdateType } from "models/update-type";
 const Main = imports.ui.main;
 const QuickSettings = Main.panel.statusArea.quickSettings;
 
-export class AudioPanel {
+export class AudioPanelWrapper {
   getDisplayedDeviceIds(type: DeviceType): number[] {
     const devices =
       type === "output"
