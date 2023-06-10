@@ -63,13 +63,13 @@ export class AudioPanel {
       QuickSettings._volume[type === "output" ? "_output" : "_input"];
 
     if (!(volume._deviceItems instanceof ObservableMap)) {
-      log(
-        "Tried to unsubscribe from audio panel changes, even though _deviceItems is not observable"
-      );
       return;
     }
 
-    (volume._deviceItems as ObservableMap).unsubscribe(subscriptionId);
+    const observableMap = volume._deviceItems as ObservableMap;
+
+    observableMap.unsubscribe(subscriptionId);
+    volume._deviceItems = observableMap.toNativeMap();
   }
 }
 

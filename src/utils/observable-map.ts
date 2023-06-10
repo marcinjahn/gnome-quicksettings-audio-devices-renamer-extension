@@ -30,4 +30,8 @@ export class ObservableMap extends Map<unknown, unknown> {
 
     return this;
   }
+
+  public toNativeMap(): Map<unknown, unknown> {
+    return new Map(this);
+  }
 }
