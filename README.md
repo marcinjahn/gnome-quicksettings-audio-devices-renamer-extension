@@ -42,3 +42,8 @@ The devices names may be configured via preferences window.
   extension](https://extensions.gnome.org/extension/5446/quick-settings-tweaker/).
   Even if you've installed Quick Setting Tweaker and have this option enabled,
   outputs/inputs should be correctly displaying in the Quick Settings panel.
+
+## Mentions
+
+- [OMG!
+  Ubuntu](https://www.omgubuntu.co.uk/2023/06/rename-audio-devices-gnomes-quick-settings)
