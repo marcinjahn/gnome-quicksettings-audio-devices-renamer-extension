@@ -27,6 +27,36 @@ The devices names may be configured via preferences window.
 
 <img alt="Input Settings" src="https://raw.githubusercontent.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/main/img/inputs-preferences.png" width="80%">
 
+## Contributing
+
+In case of problems, it's a good idea to open an
+[Issue](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/issues).
+If you know how to fix it, open a [Pull
+Request](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension/pulls)!
+
+### Local Development
+
+To run the extension locally "from sources":
+
+```
+git clone git@github.com:marcinjahn/gnome-quicksettings-audio-devices-renamer-extension.git
+cd gnome-quicksettings-audio-devices-renamer-extension
+npm i
+npm run build
+npm run linkdist
+```
+
+The last command will creae a soft link at
+`~/.local/share/gnome-shell/extensions/quicksettings-audio-devices-renamer@marcinjahn.com`,
+which allows you to enable the extension on your system (e.g., via [Extensions
+Manager](https://flathub.org/apps/com.mattjakeman.ExtensionManager)).
+
+Anytime you change anything, rebuild the extension with `npm run build`, and
+restart the session:
+
+- on Wayland, log out and log in (I know, it's painful),
+- on X11, open "Run a Command" dialog (Alt + F2), type "r" and press Enter
+
 ## Remarks
 
 - note that the extension does not rename the devices "deep" in the system. It
