@@ -1,5 +1,6 @@
-import { delay, disposeDelayTimeouts } from "./utils/delay";
+import { Extension } from "gnomejs://extension.js";
 
+import { delay, disposeDelayTimeouts } from "./utils/delay";
 import {
   AudioPanelWrapper,
   SubscriptionId,
@@ -15,6 +16,7 @@ import {
   InputNamesMap,
   NamesMap,
   OutputNamesMap,
+  SettingsPath,
   SettingsUtils,
 } from "./settings";
 import { reverseNamesMap } from "utils/names-map-utils";
@@ -23,8 +25,7 @@ import {
   restoreQst,
 } from "integration/quick-settings-tweaker";
 
-class Extension {
-  private _uuid: string | null = null;
+export default class QuickSettingsAudioDevicesRenamerExtension extends Extension {
   private _mixer: MixerWrapper | null = null;
   private _audioPanel: AudioPanelWrapper | null = null;
   private _settings: SettingsUtils | null = null;
@@ -36,15 +37,11 @@ class Extension {
   private _audioPanelInputsSub: SubscriptionId | null = null;
   private _activeDeviceSub: MixerSubscription | null = null;
 
-  constructor(uuid: string) {
-    this._uuid = uuid;
-  }
-
   enable() {
-    log(`Enabling extension ${this._uuid}`);
+    log(`Enabling extension ${this.uuid}`);
 
     this._audioPanel = new AudioPanelWrapper();
-    this._settings = new SettingsUtils();
+    this._settings = new SettingsUtils(this.getSettings(SettingsPath));
 
     new AudioPanelMixerSource().getMixer().then((mixer) => {
       this._mixer = mixer;
@@ -288,7 +285,7 @@ class Extension {
   }
 
   disable() {
-    log(`Disabling extension ${this._uuid}`);
+    log(`Disabling extension ${this.uuid}`);
 
     if (this._activeDeviceSub) {
       this._mixer?.unsubscribe(this._activeDeviceSub);
@@ -335,8 +332,6 @@ class Extension {
 
     disposeDelayTimeouts();
 
-    this._settings?.dispose();
-
     this._settings = null;
     this._audioPanel = null;
     this._lastOutputsMap = null;
@@ -365,8 +360,4 @@ class Extension {
       this._audioPanel?.applyUpdate(update, "input");
     }
   }
-}
-
-export default function (meta: { uuid: string }): Extension {
-  return new Extension(meta.uuid);
 }

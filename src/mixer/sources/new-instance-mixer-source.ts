@@ -1,4 +1,5 @@
 import { MixerControl } from "@gi-types/gvc1";
+
 import { waitForMixerToBeReady } from "../utils";
 import { delay } from "utils/delay";
 import { MixerWrapper } from "../mixer-wrapper";

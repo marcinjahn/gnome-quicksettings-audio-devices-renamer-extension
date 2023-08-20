@@ -1,16 +1,17 @@
+import * as Main from "gnomejs://main.js";
+
 import { ObservableMap } from "utils/observable-map";
 import { DeviceType } from "../identification";
 import { UpdateType } from "models/update-type";
 
-const Main = imports.ui.main;
 const QuickSettings = Main.panel.statusArea.quickSettings;
 
 export class AudioPanelWrapper {
   getDisplayedDeviceIds(type: DeviceType): number[] {
     const devices =
       type === "output"
-        ? QuickSettings._volume._output._deviceItems
-        : QuickSettings._volume._input._deviceItems;
+        ? QuickSettings._volumeOutput._output._deviceItems
+        : QuickSettings._volumeInput._input._deviceItems;
 
     return Array.from(devices, ([id]) => id);
   }
@@ -18,8 +19,8 @@ export class AudioPanelWrapper {
   applyUpdate(updates: UpdateType[], type: DeviceType) {
     const devices =
       type === "output"
-        ? QuickSettings._volume._output._deviceItems
-        : QuickSettings._volume._input._deviceItems;
+        ? QuickSettings._volumeOutput._output._deviceItems
+        : QuickSettings._volumeInput._input._deviceItems;
 
     Array.from(devices, ([_, value]) => value).forEach((entry) => {
       const currentName = entry.label.get_text();
@@ -44,7 +45,9 @@ export class AudioPanelWrapper {
    */
   subscribeToAdditions(type: DeviceType, handler: () => void): SubscriptionId {
     const volume =
-      QuickSettings._volume[type === "output" ? "_output" : "_input"];
+      type === "output"
+        ? QuickSettings._volumeOutput._output
+        : QuickSettings._volumeInput._input;
 
     let observableMap: ObservableMap;
 
@@ -52,7 +55,7 @@ export class AudioPanelWrapper {
       observableMap = volume._deviceItems;
     } else {
       observableMap = ObservableMap.fromNativeMap(volume._deviceItems);
-      volume._deviceItems = observableMap;
+      volume._deviceItems = observableMap as Map<number, Main.DeviceItem>;
     }
 
     return observableMap.subscribe(handler);
@@ -60,7 +63,9 @@ export class AudioPanelWrapper {
 
   unsubscribeFromAdditions(type: DeviceType, subscriptionId: SubscriptionId) {
     const volume =
-      QuickSettings._volume[type === "output" ? "_output" : "_input"];
+      type === "output"
+        ? QuickSettings._volumeOutput._output
+        : QuickSettings._volumeInput._input;
 
     if (!(volume._deviceItems instanceof ObservableMap)) {
       return;
@@ -69,7 +74,10 @@ export class AudioPanelWrapper {
     const observableMap = volume._deviceItems as ObservableMap;
 
     observableMap.unsubscribe(subscriptionId);
-    volume._deviceItems = observableMap.toNativeMap();
+    volume._deviceItems = observableMap.toNativeMap() as Map<
+      number,
+      Main.DeviceItem
+    >;
   }
 }
 

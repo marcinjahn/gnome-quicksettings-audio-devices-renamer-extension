@@ -1,3 +1,5 @@
+import * as Main from "gnomejs://main.js";
+
 import { UpdateType } from "models/update-type";
 import { NamesMap } from "settings";
 
@@ -28,7 +30,7 @@ function restore(map: NamesMap) {
 }
 
 function getTweakerLabel(content: string): { text: string } | null {
-  const grid = imports.ui.main.panel.statusArea.quickSettings.menu._grid;
+  const grid = Main.panel.statusArea.quickSettings.menu._grid;
   const children = grid.get_children();
   const tweakerLabel = children.filter((c) => c.text === content);
 
