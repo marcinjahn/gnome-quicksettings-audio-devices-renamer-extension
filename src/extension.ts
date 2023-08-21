@@ -38,7 +38,7 @@ export default class QuickSettingsAudioDevicesRenamerExtension extends Extension
   private _activeDeviceSub: MixerSubscription | null = null;
 
   enable() {
-    log(`Enabling extension ${this.uuid}`);
+    console.log(`Enabling extension ${this.uuid}`);
 
     this._audioPanel = new AudioPanelWrapper();
     this._settings = new SettingsUtils(this.getSettings(SettingsPath));
@@ -285,7 +285,7 @@ export default class QuickSettingsAudioDevicesRenamerExtension extends Extension
   }
 
   disable() {
-    log(`Disabling extension ${this.uuid}`);
+    console.log(`Disabling extension ${this.uuid}`);
 
     if (this._activeDeviceSub) {
       this._mixer?.unsubscribe(this._activeDeviceSub);
