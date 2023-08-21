@@ -8,16 +8,16 @@ map.set(2, "two");
 
 let observableMap = ObservableMap.fromNativeMap(map);
 observableMap.subscribe(() => {
-  log("NEW");
+  console.log("NEW");
 });
 
-log("testing get: " + observableMap.get(1));
-log("testing has: " + observableMap.has(1));
+console.log("testing get: " + observableMap.get(1));
+console.log("testing has: " + observableMap.has(1));
 
-log("testing forof");
+console.log("testing forof");
 for (const [id, value] of observableMap) {
-  log(id + " " + value);
+  console.log(id + " " + value);
 }
 
-log("testing set");
+console.log("testing set");
 observableMap.set(3, "three");
