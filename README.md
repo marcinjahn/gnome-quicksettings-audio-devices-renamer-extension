@@ -70,11 +70,6 @@ restart the session:
   them from Quick Settings, try out my [Quick Settings Audio Devices
   Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension)
   extension. "Renamer" is compatible with "Hider" v9 and up.
-- this extension is compatible with the "Show current output/input selection"
-  option of the [Quick Settings Tweaker
-  extension](https://extensions.gnome.org/extension/5446/quick-settings-tweaker/).
-  Even if you've installed Quick Setting Tweaker and have this option enabled,
-  outputs/inputs should be correctly displaying in the Quick Settings panel.
 
 ## Mentions
 
