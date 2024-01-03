@@ -15,6 +15,9 @@ want to see there.
 
 ![Gnome Outputs in Quick Settings](./img/audio-panel.webp)
 
+> [!TIP]
+> Also try the [Quick Settings Audio Devices Hider](https://github.com/marcinjahn/gnome-quicksettings-audio-devices-hider-extension) extension!
+
 ## Configuration
 
 The devices names may be configured via preferences window.
