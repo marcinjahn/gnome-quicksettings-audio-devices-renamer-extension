@@ -49,7 +49,7 @@ npm run build
 npm run linkdist
 ```
 
-The last command will creae a soft link at
+The last command will create a soft link at
 `~/.local/share/gnome-shell/extensions/quicksettings-audio-devices-renamer@marcinjahn.com`,
 which allows you to enable the extension on your system (e.g., via [Extensions
 Manager](https://flathub.org/apps/com.mattjakeman.ExtensionManager)).
