@@ -4,5 +4,5 @@
   "uuid": "quicksettings-audio-devices-renamer@marcinjahn.com",
   "shell-version": ["46", "47", "48"],
   "url": "https://github.com/marcinjahn/gnome-quicksettings-audio-devices-renamer-extension",
-  "version": 5
+  "version": 6
 }
